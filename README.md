@@ -7,7 +7,8 @@ its Railway health check at `/actuator/health`.
 
 1. Create a Railway project and add a PostgreSQL service.
 2. Add this repository as a service. Railway detects `railway.json`, builds the
-   executable JAR with the Gradle wrapper, and starts it on Railway's `PORT`.
+   executable JAR in the included Java 17 Docker image, and starts it on
+   Railway's `PORT`.
 3. In the application service's variables, add the following references to the
    PostgreSQL service (replace `Postgres` with that service's Railway name):
 
