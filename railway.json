@@ -2,7 +2,7 @@
   "$schema": "https://railway.com/railway.schema.json",
   "build": {
     "builder": "RAILPACK",
-    "buildCommand": "./gradlew --no-daemon bootJar"
+    "buildCommand": "sh ./gradlew --no-daemon bootJar"
   },
   "deploy": {
     "startCommand": "java -Dserver.port=$PORT -jar build/libs/app.jar",
