@@ -2,6 +2,8 @@ package com.tryingstuff.stuff.ToDo;
 
 import java.util.List;
 
+import com.tryingstuff.stuff.ToDo.dto.CreateTodoRequest;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,7 +26,11 @@ public class TodoController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Todo createTodo(@RequestBody Todo todo) {
+    public Todo createTodo(@Valid @RequestBody CreateTodoRequest request) {
+        Todo todo = new Todo();
+        todo.setTitle(request.title());
+        todo.setDescription(request.description());
+
         return todoService.createTodo(todo);
     }
 
