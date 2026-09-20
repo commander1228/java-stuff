@@ -3,6 +3,7 @@ package com.tryingstuff.stuff.ToDo;
 import java.util.List;
 
 import com.tryingstuff.stuff.ToDo.dto.CreateTodoRequest;
+import com.tryingstuff.stuff.ToDo.dto.UpdateTodoRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -45,7 +46,12 @@ public class TodoController {
     }
 
     @PutMapping("/{id}")
-    public Todo updateTodo(@PathVariable Long id, @RequestBody Todo todo) {
+    public Todo updateTodo(@PathVariable Long id, @Valid @RequestBody UpdateTodoRequest request) {
+        Todo todo = new Todo();
+        todo.setTitle(request.title());
+        todo.setDescription(request.description());
+        todo.setStatus(request.status());
+
         return todoService.updateTodo(id, todo);
     }
 
