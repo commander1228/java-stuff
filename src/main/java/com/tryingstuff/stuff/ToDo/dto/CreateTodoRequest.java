@@ -8,5 +8,7 @@ public record CreateTodoRequest(
     @Size(max = 255, message = "Title must be 255 characters or fewer")
     String title,
 
-    String description
+    String description,
+
+    Long todoTypeId
 ){}

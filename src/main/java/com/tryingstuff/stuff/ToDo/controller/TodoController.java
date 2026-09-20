@@ -1,10 +1,13 @@
-package com.tryingstuff.stuff.ToDo;
+package com.tryingstuff.stuff.ToDo.controller;
 
 import java.util.List;
 
 import com.tryingstuff.stuff.ToDo.dto.CreateTodoRequest;
 import com.tryingstuff.stuff.ToDo.dto.UpdateTodoRequest;
+import com.tryingstuff.stuff.ToDo.entity.Todo;
+import com.tryingstuff.stuff.ToDo.service.TodoService;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class TodoController {
     private final TodoService todoService;
 
+    @Autowired
     public TodoController(TodoService todoService) {
         this.todoService = todoService;
     }
@@ -32,7 +36,7 @@ public class TodoController {
         todo.setTitle(request.title());
         todo.setDescription(request.description());
 
-        return todoService.createTodo(todo);
+        return todoService.createTodo(todo, request.todoTypeId());
     }
 
     @GetMapping
@@ -52,7 +56,7 @@ public class TodoController {
         todo.setDescription(request.description());
         todo.setStatus(request.status());
 
-        return todoService.updateTodo(id, todo);
+        return todoService.updateTodo(id, todo,request.todoTypeId());
     }
 
     @DeleteMapping("/{id}")

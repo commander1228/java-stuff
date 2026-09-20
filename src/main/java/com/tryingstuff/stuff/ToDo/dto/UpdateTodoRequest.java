@@ -1,6 +1,6 @@
 package com.tryingstuff.stuff.ToDo.dto;
 
-import com.tryingstuff.stuff.ToDo.TodoStatus;
+import com.tryingstuff.stuff.ToDo.enums.TodoStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -13,5 +13,7 @@ public record UpdateTodoRequest(
         String description,
 
         @NotNull(message = "Status is required")
-        TodoStatus status
+        TodoStatus status,
+
+        Long todoTypeId
 ) {}

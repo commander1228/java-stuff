@@ -1,12 +1,8 @@
-package com.tryingstuff.stuff.ToDo;
+package com.tryingstuff.stuff.ToDo.entity;
 import java.time.LocalDate;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 
+import com.tryingstuff.stuff.ToDo.enums.TodoStatus;
+import jakarta.persistence.*;
 
 
 @Entity
@@ -14,21 +10,39 @@ public class Todo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false, length = 255)
     private String title;
+
+
     private String description;
+
+    @ManyToOne
+    @JoinColumn(name = "todo_type_id")
+    private TodoType todoType;
+
+
     private LocalDate createdDate;
     private boolean deleted = false;
 
-    @Enumerated(EnumType.STRING)
-    private TodoStatus status;
+    public TodoType getTodoType() {
+        return todoType;
+    }
 
-    public Boolean getDeleted() {
+    public void setTodoType(TodoType todoType) {
+        this.todoType = todoType;
+    }
+
+    public boolean isDeleted() {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(boolean deleted) {
         this.deleted = deleted;
     }
+
+    @Enumerated(EnumType.STRING)
+    private TodoStatus status;
 
     public LocalDate getCreatedDate() {
         return createdDate;
