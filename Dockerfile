@@ -7,7 +7,15 @@ COPY gradle gradle
 COPY build.gradle settings.gradle ./
 
 COPY src src
-RUN sh ./gradlew --no-daemon bootJar
+RUN for attempt in 1 2 3 4 5; do \
+      if sh ./gradlew --no-daemon bootJar; then exit 0; fi; \
+      if [ "$attempt" -lt 5 ]; then \
+        delay=$((attempt * 30)); \
+        echo "Gradle build failed; retrying in ${delay}s..."; \
+        sleep "$delay"; \
+      fi; \
+    done; \
+    exit 1
 
 FROM eclipse-temurin:17-jre
 
