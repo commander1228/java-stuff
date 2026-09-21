@@ -2,6 +2,7 @@ package com.tryingstuff.stuff.guild.blizzapi;
 
 import java.util.List;
 
+import com.tryingstuff.stuff.guild.dto.BlizzardItemResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
@@ -43,7 +44,7 @@ public class BlizzardAuthCheckCommand implements ApplicationRunner {
 
         if (requestedItem) {
             long itemId = getItemId(args.getOptionValues("get-classic-item"));
-            String item = blizzardApiService.getItemById(itemId);
+            BlizzardItemResponse item = blizzardApiService.getItemById(itemId);
             logger.info("Classic Era North America item response:\n{}", item);
         }
 
