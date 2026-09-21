@@ -21,6 +21,9 @@ public class Todo {
     @JoinColumn(name = "todo_type_id")
     private TodoType todoType;
 
+    @Enumerated(EnumType.STRING)
+    private TodoStatus status;
+
 
     private LocalDate createdDate;
     private boolean deleted = false;
@@ -40,9 +43,6 @@ public class Todo {
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
     }
-
-    @Enumerated(EnumType.STRING)
-    private TodoStatus status;
 
     public LocalDate getCreatedDate() {
         return createdDate;
