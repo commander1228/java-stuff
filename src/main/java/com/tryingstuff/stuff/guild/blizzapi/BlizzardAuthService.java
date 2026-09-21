@@ -4,12 +4,16 @@ import java.time.Instant;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.http.MediaType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientResponseException;
 
 @Service
 public class BlizzardAuthService {
     private static final int REFRESH_BUFFER_SECONDS = 60;
+    private static final Logger logger = LoggerFactory.getLogger(BlizzardAuthService.class);
 
     private final BlizzardProperties properties;
     private final RestClient restClient;
@@ -32,16 +36,36 @@ public class BlizzardAuthService {
     }
 
     private void refreshAccessToken() {
-        BlizzardTokenResponse response = restClient.post()
-                .uri(properties.oauth().tokenUrl())
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .headers(headers -> headers.setBasicAuth(
-                        properties.clientId(),
-                        properties.clientSecret()
-                ))
-                .body("grant_type=client_credentials")
-                .retrieve()
-                .body(BlizzardTokenResponse.class);
+        if (!hasText(properties.clientId()) || !hasText(properties.clientSecret())) {
+            throw new IllegalStateException("Blizzard OAuth credentials are missing.");
+        }
+
+        logger.info(
+                "Requesting Blizzard OAuth token: tokenUrl={}, clientIdConfigured={}, clientSecretConfigured={}",
+                properties.oauth().tokenUrl(),
+                hasText(properties.clientId()),
+                hasText(properties.clientSecret())
+        );
+
+        BlizzardTokenResponse response;
+        try {
+            response = restClient.post()
+                    .uri(properties.oauth().tokenUrl())
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                    .headers(headers -> headers.setBasicAuth(
+                            properties.clientId(),
+                            properties.clientSecret()
+                    ))
+                    .body("grant_type=client_credentials")
+                    .retrieve()
+                    .body(BlizzardTokenResponse.class);
+        } catch (RestClientResponseException exception) {
+            logger.error(
+                    "Blizzard OAuth token request failed: status={}",
+                    exception.getStatusCode()
+            );
+            throw exception;
+        }
 
         if (response == null
                 || response.accessToken() == null
@@ -56,6 +80,11 @@ public class BlizzardAuthService {
         expiresAt = Instant.now().plusSeconds(
                 Math.max(0, response.expiresIn() - REFRESH_BUFFER_SECONDS)
         );
+        logger.info("Blizzard OAuth token acquired; expiresAt={}", expiresAt);
+    }
+
+    private boolean hasText(String value) {
+        return value != null && !value.isBlank();
     }
 
     private record BlizzardTokenResponse(

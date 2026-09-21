@@ -4,6 +4,6 @@ import jakarta.validation.constraints.Positive;
 
 public record AddOnItem(
 
-        @Positive  long BlizzardId,
+        @Positive  long blizzardId,
          @Positive long quantity
 ) {}
