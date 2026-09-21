@@ -18,7 +18,7 @@ public class GuildBankController {
         this.guildBankService = guildBankService;
     }
 
-    @GetMapping("/add")
+    @PostMapping("/add")
     public WowItem addWowItem(@Valid @RequestBody AddOnItem addOnItem){
         return guildBankService.addItemToBank(addOnItem);
     }
