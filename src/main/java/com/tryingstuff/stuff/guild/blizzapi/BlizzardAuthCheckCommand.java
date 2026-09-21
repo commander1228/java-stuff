@@ -63,7 +63,7 @@ public class BlizzardAuthCheckCommand implements ApplicationRunner {
             return Long.parseLong(itemIds.get(0));
         } catch (NumberFormatException exception) {
             throw new IllegalArgumentException(
-                    "Item ID must be a whole number: " + itemIds.get(0),
+                    "Item ID must be a whole number triggerrailwaystuff: " + itemIds.get(0),
                     exception
             );
         }
