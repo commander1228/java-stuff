@@ -1,7 +1,6 @@
 package com.tryingstuff.stuff.guild.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
 
 @Entity
@@ -15,7 +14,7 @@ public class WowItem {
 
     @Positive
     @Column(nullable = false)
-    private Long itemCount;
+    private Long quantity;
 
     private String qualityType;
 
@@ -52,12 +51,12 @@ public class WowItem {
         this.name = name;
     }
 
-    public Long getItemCount() {
-        return itemCount;
+    public Long getQuantity() {
+        return quantity;
     }
 
-    public void setItemCount(Long itemCount) {
-        this.itemCount = itemCount;
+    public void setQuantity(Long quantity) {
+        this.quantity = quantity;
     }
 
     public String getQualityType() {

@@ -15,15 +15,15 @@ public class BlizzardAuthCheckCommand implements ApplicationRunner {
     private static final Logger logger = LoggerFactory.getLogger(BlizzardAuthCheckCommand.class);
 
     private final BlizzardAuthService blizzardAuthService;
-    private final BlizzardApi blizzardApi;
+    private final BlizzardApiService blizzardApiService;
     private final ApplicationContext applicationContext;
 
     public BlizzardAuthCheckCommand(
             BlizzardAuthService blizzardAuthService,
-            BlizzardApi blizzardApi,
+            BlizzardApiService blizzardApiService,
             ApplicationContext applicationContext) {
         this.blizzardAuthService = blizzardAuthService;
-        this.blizzardApi = blizzardApi;
+        this.blizzardApiService = blizzardApiService;
         this.applicationContext = applicationContext;
     }
 
@@ -43,7 +43,7 @@ public class BlizzardAuthCheckCommand implements ApplicationRunner {
 
         if (requestedItem) {
             long itemId = getItemId(args.getOptionValues("get-classic-item"));
-            String item = blizzardApi.getItemById(itemId);
+            String item = blizzardApiService.getItemById(itemId);
             logger.info("Classic Era North America item response:\n{}", item);
         }
 

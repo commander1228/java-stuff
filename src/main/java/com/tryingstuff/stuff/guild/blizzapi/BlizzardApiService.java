@@ -1,15 +1,16 @@
 package com.tryingstuff.stuff.guild.blizzapi;
 
+import com.tryingstuff.stuff.guild.dto.BlizzardItemResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 @Service
-public class BlizzardApi {
+public class BlizzardApiService {
     private final BlizzardProperties properties;
     private final BlizzardAuthService blizzardAuthService;
     private final RestClient restClient;
 
-    public BlizzardApi(
+    public BlizzardApiService(
             BlizzardProperties properties,
             BlizzardAuthService blizzardAuthService,
             RestClient.Builder restClientBuilder) {
@@ -18,12 +19,12 @@ public class BlizzardApi {
         this.restClient = restClientBuilder.build();
     }
 
-    public String getItemById(long itemId) {
+    public BlizzardItemResponse getItemById(long itemId) {
         if (itemId <= 0) {
             throw new IllegalArgumentException("Item ID must be positive.");
         }
 
-        String response = restClient.get()
+        BlizzardItemResponse response = restClient.get()
                 .uri(
                         properties.api().baseUrl()
                                 + "/data/wow/item/{itemId}?namespace={namespace}&locale={locale}",
@@ -34,9 +35,9 @@ public class BlizzardApi {
                 .headers(headers ->
                         headers.setBearerAuth(blizzardAuthService.getAccessToken()))
                 .retrieve()
-                .body(String.class);
+                .body(BlizzardItemResponse.class);
 
-        if (response == null || response.isBlank()) {
+        if (response == null) {
             throw new IllegalStateException("Blizzard returned an empty item response.");
         }
 
