@@ -3,6 +3,9 @@ package com.tryingstuff.stuff.guild.service;
 import com.tryingstuff.stuff.guild.entity.GuildBankSync;
 import com.tryingstuff.stuff.guild.entity.WowItem;
 import com.tryingstuff.stuff.guild.repository.WowItemRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,6 +13,8 @@ import java.util.Optional;
 
 @Service
 public class WowItemServiceImpl implements WowItemService{
+    private static final Logger logger = LoggerFactory.getLogger(WowItemServiceImpl.class);
+
     private final WowItemRepository wowItemRepository;
 
     public WowItemServiceImpl(
@@ -20,7 +25,31 @@ public class WowItemServiceImpl implements WowItemService{
 
     @Override
     public WowItem saveWowItem(WowItem wowItem) {
-        return  wowItemRepository.save(wowItem);
+        logger.info(
+                "Persisting guild-bank item: id={}, blizzardId={}, lastSyncId={}",
+                wowItem.getId(),
+                wowItem.getBlizzardId(),
+                wowItem.getLastSync().getId()
+        );
+
+        try {
+            WowItem savedWowItem = wowItemRepository.save(wowItem);
+            logger.info(
+                    "Guild-bank item persisted: id={}, blizzardId={}",
+                    savedWowItem.getId(),
+                    savedWowItem.getBlizzardId()
+            );
+            return savedWowItem;
+        } catch (DataAccessException exception) {
+            logger.error(
+                    "Failed to persist guild-bank item: id={}, blizzardId={}, lastSyncId={}",
+                    wowItem.getId(),
+                    wowItem.getBlizzardId(),
+                    wowItem.getLastSync().getId(),
+                    exception
+            );
+            throw exception;
+        }
     }
 
     @Override
@@ -52,7 +81,19 @@ public class WowItemServiceImpl implements WowItemService{
     @Override
     public  WowItem upsertWowItem(WowItem wowItemToUpsert) {
         Optional<WowItem> wowItem = findWowItemByBlizzardId(wowItemToUpsert.getBlizzardId());
-        wowItem.ifPresent(item -> wowItemToUpsert.setId(item.getId()));
+        if (wowItem.isPresent()) {
+            wowItemToUpsert.setId(wowItem.get().getId());
+            logger.info(
+                    "Updating existing guild-bank item: id={}, blizzardId={}",
+                    wowItemToUpsert.getId(),
+                    wowItemToUpsert.getBlizzardId()
+            );
+        } else {
+            logger.info(
+                    "Creating guild-bank item: blizzardId={}",
+                    wowItemToUpsert.getBlizzardId()
+            );
+        }
         return saveWowItem(wowItemToUpsert);
     }
 }
