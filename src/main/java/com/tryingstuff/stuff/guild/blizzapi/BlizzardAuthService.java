@@ -41,10 +41,14 @@ public class BlizzardAuthService {
         }
 
         logger.info(
-                "Requesting Blizzard OAuth token: tokenUrl={}, clientIdConfigured={}, clientSecretConfigured={}",
+                "Requesting Blizzard OAuth token: processId={}, tokenUrl={}, clientIdConfigured={}, "
+                        + "clientIdLength={}, clientSecretConfigured={}, clientSecretLength={}",
+                ProcessHandle.current().pid(),
                 properties.oauth().tokenUrl(),
                 hasText(properties.clientId()),
-                hasText(properties.clientSecret())
+                properties.clientId().length(),
+                hasText(properties.clientSecret()),
+                properties.clientSecret().length()
         );
 
         BlizzardTokenResponse response;
