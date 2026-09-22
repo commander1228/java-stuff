@@ -52,6 +52,7 @@ public class GuildBankServiceImpl implements GuildBankService {
             logger.warn("failed to add: {}", item.blizzardId(), exception);
             }
         }
+        wowItemService.deleteNotSyncedItems(guildBankSync);
         return itemsAdded;
     }
 
