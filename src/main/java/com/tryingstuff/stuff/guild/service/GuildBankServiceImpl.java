@@ -8,7 +8,9 @@ import com.tryingstuff.stuff.guild.entity.GuildBankSync;
 import com.tryingstuff.stuff.guild.entity.WowItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 
 import java.util.List;
 
@@ -30,28 +32,27 @@ public class GuildBankServiceImpl implements GuildBankService {
     }
 
     @Override
-    public WowItem addItemToBank(AddOnItem addOnItem) {
-        logger.info(
-                "Adding guild-bank item: blizzardId={}, quantity={}",
-                addOnItem.blizzardId(),
-                addOnItem.quantity()
-        );
-        GuildBankSync guildBankSync = guildBankSyncService.createGuildBankSync();
-        logger.info("Created guild-bank sync: syncId={}", guildBankSync.getId());
+    public WowItem addItemToBank(AddOnItem addOnItem,GuildBankSync guildBankSync) {
         WowItem wowItem = convertToWowItem(addOnItem);
         wowItem.setLastSync(guildBankSync);
         WowItem savedWowItem = wowItemService.upsertWowItem(wowItem);
-        logger.info(
-                "Guild-bank item saved: id={}, blizzardId={}",
-                savedWowItem.getId(),
-                savedWowItem.getBlizzardId()
-        );
         return savedWowItem;
     }
 
     @Override
-    public Long addItemsToBank(List<WowItem> wowItems) {
-        return 0L;
+    public Long addItemsToBank(List<AddOnItem> addOnItems) {
+        Long itemsAdded = 0L;
+        GuildBankSync guildBankSync = guildBankSyncService.createGuildBankSync();
+        for(AddOnItem item : addOnItems){
+            try {
+                addItemToBank(item, guildBankSync);
+                itemsAdded++;
+            } catch (IllegalArgumentException | IllegalStateException
+                | RestClientException | DataAccessException exception) {
+            logger.warn("failed to add: {}", item.blizzardId(), exception);
+            }
+        }
+        return itemsAdded;
     }
 
     @Override
@@ -78,7 +79,7 @@ public class GuildBankServiceImpl implements GuildBankService {
     }
 
     @Override
-    public void updateGuildBank(List<AddOnItem> addOnItems) {
-
+    public List<WowItem> getItems() {
+        return wowItemService.getAllWowItems();
     }
 }

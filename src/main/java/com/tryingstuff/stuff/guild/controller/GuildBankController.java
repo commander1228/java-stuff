@@ -8,6 +8,8 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/guild")
 public class GuildBankController {
@@ -19,7 +21,12 @@ public class GuildBankController {
     }
 
     @PostMapping("/add")
-    public WowItem addWowItem(@Valid @RequestBody AddOnItem addOnItem){
-        return guildBankService.addItemToBank(addOnItem);
+    public Long addWowItems(@Valid @RequestBody List<AddOnItem> addOnItems){
+        return guildBankService.addItemsToBank(addOnItems);
+    }
+
+    @GetMapping
+    public List<WowItem> getItems() {
+        return guildBankService.getItems();
     }
 }

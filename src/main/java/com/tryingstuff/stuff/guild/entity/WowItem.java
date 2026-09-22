@@ -2,12 +2,14 @@ package com.tryingstuff.stuff.guild.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Positive;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class WowItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     private Long id;
 
     private String name;
@@ -25,6 +27,7 @@ public class WowItem {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "last_sync_id", nullable = false)
+    @JsonIgnore
     private GuildBankSync lastSync;
 
     public Long getId() {

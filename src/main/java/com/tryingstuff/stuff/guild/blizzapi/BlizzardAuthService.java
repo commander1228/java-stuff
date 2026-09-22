@@ -40,17 +40,6 @@ public class BlizzardAuthService {
             throw new IllegalStateException("Blizzard OAuth credentials are missing.");
         }
 
-        logger.info(
-                "Requesting Blizzard OAuth token: processId={}, tokenUrl={}, clientIdConfigured={}, "
-                        + "clientIdLength={}, clientSecretConfigured={}, clientSecretLength={}",
-                ProcessHandle.current().pid(),
-                properties.oauth().tokenUrl(),
-                hasText(properties.clientId()),
-                properties.clientId().length(),
-                hasText(properties.clientSecret()),
-                properties.clientSecret().length()
-        );
-
         BlizzardTokenResponse response;
         try {
             response = restClient.post()
