@@ -1,0 +1,2 @@
+ALTER TABLE wow_item
+ADD COLUMN icon_url VARCHAR(2048) NOT NULL;
