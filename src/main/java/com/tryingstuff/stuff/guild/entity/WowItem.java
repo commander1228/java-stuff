@@ -25,6 +25,9 @@ public class WowItem {
     @Column(nullable = false,unique = true)
     private Long blizzardId;
 
+    @Column(nullable = false)
+    private String iconUrl;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "last_sync_id", nullable = false)
     @JsonIgnore
@@ -84,5 +87,13 @@ public class WowItem {
 
     public void setLastSync(GuildBankSync lastSync) {
         this.lastSync = lastSync;
+    }
+
+    public String getIconUrl() {
+        return iconUrl;
+    }
+
+    public void setIconUrl(String iconUrl) {
+        this.iconUrl = iconUrl;
     }
 }

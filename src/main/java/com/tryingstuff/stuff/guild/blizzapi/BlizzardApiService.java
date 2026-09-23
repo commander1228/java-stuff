@@ -1,5 +1,6 @@
 package com.tryingstuff.stuff.guild.blizzapi;
 
+import com.tryingstuff.stuff.guild.dto.BlizzardIconResponse;
 import com.tryingstuff.stuff.guild.dto.BlizzardItemResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,9 @@ public class BlizzardApiService {
     private final BlizzardAuthService blizzardAuthService;
     private final RestClient restClient;
 
+    private static final String ITEM_PATH = "/data/wow/item/{itemId}?namespace={namespace}&locale={locale}";
+    private static final String ITEM_MEDIA_PATH = "/data/wow/media/item/{itemId}?namespace={namespace}&locale={locale}";
+
     public BlizzardApiService(
             BlizzardProperties properties,
             BlizzardAuthService blizzardAuthService,
@@ -24,46 +28,64 @@ public class BlizzardApiService {
         this.restClient = restClientBuilder.build();
     }
 
-    public BlizzardItemResponse getItemById(long itemId) {
-        if (itemId <= 0) {
-            throw new IllegalArgumentException("Item ID must be positive.");
-        }
-
-        logger.info(
-                "Fetching Blizzard item: itemId={}, namespace={}, locale={}",
-                itemId,
-                properties.api().classicEraNamespace(),
-                properties.api().locale()
-        );
-
-        BlizzardItemResponse response;
+    private <T> T getBlizzardItemResponse(
+            String path,
+            long itemId,
+            Class<T> responseType
+    ){
         try {
-            response = restClient.get()
+            T response = restClient.get()
                     .uri(
-                            properties.api().baseUrl()
-                                    + "/data/wow/item/{itemId}?namespace={namespace}&locale={locale}",
-                            itemId,
+                            properties.api().baseUrl() + path, itemId,
                             properties.api().classicEraNamespace(),
                             properties.api().locale()
                     )
                     .headers(headers ->
                             headers.setBearerAuth(blizzardAuthService.getAccessToken()))
                     .retrieve()
-                    .body(BlizzardItemResponse.class);
-        } catch (RestClientResponseException exception) {
-            logger.error(
-                    "Blizzard item request failed: itemId={}, status={}",
-                    itemId,
-                    exception.getStatusCode()
-            );
+                    .body(responseType);
+
+            if (response == null) {
+                throw new IllegalStateException(
+                        "empty response"
+                );
+            }
+            return response;
+        } catch (RestClientResponseException exception){
+            logger.error("blizzard api gave error: {}",exception.getStatusCode());
             throw exception;
         }
+    }
 
-        if (response == null) {
-            throw new IllegalStateException("Blizzard returned an empty item response.");
+    private long validateItemId(long itemId){
+        if(itemId <= 0){
+            throw new IllegalArgumentException("Item ID must be positive.");
         }
+        return itemId;
+    }
 
+    public BlizzardItemResponse getItemById(long itemId) {
+        validateItemId(itemId);
+        BlizzardItemResponse response = getBlizzardItemResponse(ITEM_PATH,itemId,BlizzardItemResponse.class);
         logger.info("Blizzard item fetched: itemId={}, name={}", response.id(), response.name());
         return response;
+    }
+
+    public String getItemIconUrl(long itemId){
+        validateItemId(itemId);
+        BlizzardIconResponse response = getBlizzardItemResponse(ITEM_MEDIA_PATH,itemId,BlizzardIconResponse.class);
+        if (response.assets() == null || response.assets().isEmpty()) {
+            throw new IllegalStateException(
+                    "Blizzard returned no media assets for item ID: " + itemId
+            );
+        }
+        //returns icon url from inside json object
+        return response.assets().stream()
+                .filter(asset -> "icon".equals(asset.key()))
+                .map(BlizzardIconResponse.IconUrl::value)
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException(
+                        "Blizzard returned no icon asset for item ID: " + itemId
+                ));
     }
 }

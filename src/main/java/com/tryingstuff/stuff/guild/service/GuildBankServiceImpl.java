@@ -70,6 +70,7 @@ public class GuildBankServiceImpl implements GuildBankService {
         wowItem.setQualityType(blizzardItemResponse.quality().type());
         wowItem.setQualityName(blizzardItemResponse.quality().name());
         wowItem.setQuantity(addOnItem.quantity());
+        wowItem.setIconUrl(blizzardApiService.getItemIconUrl(wowItem.getBlizzardId()));
 
         logger.info(
                 "Mapped Blizzard item to guild-bank item: blizzardId={}, name={}",
