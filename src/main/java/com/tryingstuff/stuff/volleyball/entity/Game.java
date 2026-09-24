@@ -3,6 +3,7 @@ package com.tryingstuff.stuff.volleyball.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Positive;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,7 +20,7 @@ public class Game {
     private String gameTime;
 
     @Column(nullable = false, length = 255)
-    private String gameDate;
+    private LocalDate gameDate;
 
     @Column(nullable = false)
     @Positive
@@ -52,11 +53,11 @@ public class Game {
         this.gameTime = gameTime;
     }
 
-    public String getGameDate() {
+    public LocalDate getGameDate() {
         return gameDate;
     }
 
-    public void setGameDate(String gameDate) {
+    public void setGameDate(LocalDate gameDate) {
         this.gameDate = gameDate;
     }
 
