@@ -83,6 +83,4 @@ public class Todo {
     public void setStatus(TodoStatus status) {
         this.status = status;
     }
-
-
 }
