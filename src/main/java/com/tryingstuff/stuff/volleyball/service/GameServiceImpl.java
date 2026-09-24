@@ -37,4 +37,9 @@ public class GameServiceImpl implements GameService {
         gameRepository.delete(gameToDelete);
         return gameToDelete;
     }
+
+    @Override
+    public List<Long> getAllGameIds(){
+        return gameRepository.findAllIds();
+    }
 }

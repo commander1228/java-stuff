@@ -26,6 +26,11 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
+    public List<Long> getAllPlayerIds(){
+        return playerRepository.findAllIds();
+    }
+
+    @Override
     public Player deletePlayer(Long id) {
         Player playerToDelete = getPlayerById(id);
         playerRepository.delete(playerToDelete);

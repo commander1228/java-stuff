@@ -5,8 +5,9 @@ import com.tryingstuff.stuff.volleyball.entity.GameAttendance;
 import com.tryingstuff.stuff.volleyball.entity.Player;
 import com.tryingstuff.stuff.volleyball.enums.Attendance;
 import com.tryingstuff.stuff.volleyball.repository.GameAttendanceRepository;
-import com.tryingstuff.stuff.volleyball.repository.GameRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -51,8 +52,8 @@ public class GameAttendanceServiceImpl implements GameAttendanceService {
     }
 
     @Override
-    public List<GameAttendance> getGameAttendancesByGameId(Long id) {
-        return List.of();
+    public List<GameAttendance> getGameAttendancesByGameId(Long gameId) {
+        return gameAttendanceRepository.findAllByGameIdWithPlayer(gameId);
     }
 
     @Override
@@ -62,11 +63,21 @@ public class GameAttendanceServiceImpl implements GameAttendanceService {
 
     @Override
     public GameAttendance getGameAttendanceByGameAndPlayerId(Long gameId, Long playerId) {
-        return null;
+        return gameAttendanceRepository.findByGame_IdAndPlayer_Id(gameId,playerId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Attendance not found for game " + gameId + " and player " + playerId
+                ));
     }
 
     @Override
-    public GameAttendance updateGameAttendance(Long id) {
-        return null;
+    public GameAttendance updateGameAttendanceStatus(
+            Long gameId,
+            Long playerId,
+            Attendance status
+    ) {
+        GameAttendance gameAttendance = getGameAttendanceByGameAndPlayerId(gameId, playerId);
+        gameAttendance.setStatus(status);
+        return gameAttendanceRepository.save(gameAttendance);
     }
 }

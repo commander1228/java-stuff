@@ -17,7 +17,7 @@ public interface GameAttendanceService {
 
     GameAttendance getGameAttendanceByGameAndPlayerId(Long gameId,Long playerId);
 
-    GameAttendance updateGameAttendance(Long id);
+    GameAttendance updateGameAttendanceStatus(Long gameId, Long playerId, Attendance status);
 
     GameAttendance deleteGameAttendance(Long id);
 }
