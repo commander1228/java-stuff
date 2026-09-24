@@ -48,4 +48,17 @@ public final class RequestMapper {
                 players
         );
     }
+
+    public static GameDateResponse gameDateResponse(Game game){
+        return new GameDateResponse(
+                game.getId(),
+                game.getGameDate()
+        );
+    }
+
+    public static List<GameDateResponse> gameDates(List<Game> games){
+        return games.stream()
+                .map(RequestMapper::gameDateResponse)
+                .toList();
+    }
 }
